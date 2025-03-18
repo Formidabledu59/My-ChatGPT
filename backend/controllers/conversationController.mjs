@@ -3,31 +3,19 @@ import fetch from 'node-fetch';
 import pool from '../dbConfig.mjs';
 
 const addMessage = async (req, res) => {
-  const { inputText } = req.body;
-  const MODEL_NAME = "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B";
+  const { conversationId } = req.params;
+  const { sender, text } = req.body;
 
   try {
-    const response = await fetch(
-      `https://api-inference.huggingface.co/models/${MODEL_NAME}`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.HF_API_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ inputs: inputText }),
-      }
+    const [result] = await pool.query(
+      'INSERT INTO message (idConv, sender, message) VALUES (?, ?, ?)',
+      [conversationId, sender, text]
     );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const result = await response.json();
-    res.json(result[0].generated_text);
+    const newMessage = { id: result.insertId, idConv: conversationId, sender, message: text };
+    res.status(201).json(newMessage);
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send("Server Error");
+    console.error('Error adding message:', error);
+    res.status(500).send('Server Error');
   }
 };
 

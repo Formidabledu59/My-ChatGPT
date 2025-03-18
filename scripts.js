@@ -29,6 +29,7 @@ async function createConversation() {
     const newConversation = await response.json();
     conversations.push(newConversation);
     currentConversationId = newConversation.id;
+    await fetchConversations(); // Fetch updated list of conversations
     renderConversations();
     renderMessages();
     toggleChatContainer(); // Show chat container when a conversation is created
@@ -100,7 +101,8 @@ async function sendMessage() {
 
   const message = {
     sender: 'Vous',
-    text: userInput
+    text: userInput,
+    idConv: currentConversationId // Inclure l'ID de la conversation courante
   };
 
   try {
@@ -176,6 +178,31 @@ function toggleChatContainer() {
   } else {
     chatContainer.style.display = 'flex';
   }
+}
+
+function renderConversations() {
+  const conversationList = document.getElementById('conversation-list');
+  conversationList.innerHTML = '';
+
+  conversations.forEach(conversation => {
+    const conversationItem = document.createElement('li');
+    conversationItem.className = 'conversation-item';
+    conversationItem.textContent = conversation.titre;
+    conversationItem.onclick = () => {
+      currentConversationId = conversation.id;
+      renderMessages();
+      highlightSelectedConversation(conversationItem);
+    };
+    conversationList.appendChild(conversationItem);
+  });
+}
+
+function highlightSelectedConversation(selectedItem) {
+  const items = document.querySelectorAll('.conversation-item');
+  items.forEach(item => {
+    item.classList.remove('selected');
+  });
+  selectedItem.classList.add('selected');
 }
 
 // Initial call to fetch conversations and set chat container visibility
