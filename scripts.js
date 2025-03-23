@@ -102,6 +102,7 @@ async function sendMessage() {
   if (!message || !currentConversationId) return;
 
   try {
+    // Envoyer le message de l'utilisateur à l'API
     const response = await fetch(`http://localhost:5000/api/conversations/${currentConversationId}/messages`, {
       method: 'POST',
       headers: {
@@ -117,11 +118,31 @@ async function sendMessage() {
 
     const newMessage = await response.json();
 
-    // Ajouter le message à l'interface utilisateur
+    // Ajouter le message de l'utilisateur à l'interface utilisateur
     addMessageToChat(newMessage.sender, newMessage.message);
 
     // Réinitialiser le champ d'entrée
     userInput.value = '';
+
+    // Attendre la réponse de l'IA
+    const aiResponse = await fetch(`http://localhost:5000/api/conversations/${currentConversationId}/ai-response`, {
+      method: 'GET',
+    });
+
+    if (!aiResponse.ok) {
+      console.error('Erreur lors de la récupération de la réponse de l\'IA');
+      return;
+    }
+
+    const aiMessage = await aiResponse.json();
+
+    // Ajouter la réponse finale de l'IA à l'interface utilisateur
+    addMessageToChat(aiMessage.sender, aiMessage.message);
+
+    // Afficher le raisonnement dans la div #reasoning
+    const reasoningDiv = document.getElementById('reasoning');
+    reasoningDiv.textContent = aiMessage.reasoning;
+    reasoningDiv.style.display = 'block'; // Afficher la div
   } catch (error) {
     console.error('Erreur réseau :', error);
   }
