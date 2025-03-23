@@ -6,7 +6,7 @@ async function fetchConversations() {
     const response = await fetch('http://localhost:5000/api/conversations');
     conversations = await response.json();
     renderConversations();
-    toggleChatContainer();
+    toggleWelcomeScreen(); // Mettre à jour l'affichage
   } catch (error) {
     console.error('Error fetching conversations:', error);
   }
@@ -79,7 +79,10 @@ async function deleteConversation(conversationId) {
 async function renderMessages() {
   const chatBox = document.getElementById('chat-box');
   chatBox.innerHTML = '';
-  if (!currentConversationId) return;
+  if (!currentConversationId) {
+    toggleWelcomeScreen(); // Mettre à jour l'affichage
+    return;
+  }
 
   try {
     const response = await fetch(`http://localhost:5000/api/conversations/${currentConversationId}/messages`);
@@ -229,6 +232,19 @@ function highlightSelectedConversation(selectedItem) {
     item.classList.remove('selected');
   });
   selectedItem.classList.add('selected');
+}
+
+function toggleWelcomeScreen() {
+  const welcomeScreen = document.getElementById('welcome-screen');
+  const chatContainer = document.getElementById('chat-container');
+
+  if (!currentConversationId) {
+    welcomeScreen.style.display = 'block';
+    chatContainer.style.display = 'none';
+  } else {
+    welcomeScreen.style.display = 'none';
+    chatContainer.style.display = 'flex';
+  }
 }
 
 // Initial call to fetch conversations and set chat container visibility
