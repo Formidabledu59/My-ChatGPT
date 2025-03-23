@@ -8,8 +8,13 @@
 </head>
 <body>
   <div id="sidebar">
+    <button id="toggle-sidebar" onclick="toggleSidebar()">☰</button>
     <button onclick="createConversation()">Nouvelle Conversation</button>
     <ul id="conversation-list" class="conversation-list"></ul>
+  </div>
+  <div id="welcome-screen" style="display: none;">
+    <h1>Bienvenue sur My-ChatGPT</h1>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
   </div>
   <div id="chat-container">
     <div id="no-conversation">Veuillez créer une conversation pour commencer.</div>
