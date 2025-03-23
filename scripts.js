@@ -259,6 +259,13 @@ function toggleSidebar() {
   }
 }
 
+function quitConversation() {
+  currentConversationId = null; // Réinitialiser l'ID de la conversation courante
+  toggleWelcomeScreen(); // Afficher la page d'accueil
+  const chatBox = document.getElementById('chat-box');
+  chatBox.innerHTML = ''; // Réinitialiser le contenu du chat
+}
+
 // Initial call to fetch conversations and set chat container visibility
 fetchConversations();
 toggleNoConversationMessage();
