@@ -177,3 +177,19 @@ body {
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
+#quit-conversation {
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: white;
+  background-color: #FF4D4D;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
+}
+
+#quit-conversation:hover {
+  background-color: #CC0000;
+}
