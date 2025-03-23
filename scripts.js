@@ -164,24 +164,6 @@ async function renderMessages() {
   }
 }
 
-function showTypingIndicator() {
-  const typingIndicator = document.getElementById('typing-indicator');
-  if (typingIndicator) {
-    typingIndicator.style.display = 'flex'; // Afficher l'indicateur
-  } else {
-    console.error('Typing indicator element not found');
-  }
-}
-
-function hideTypingIndicator() {
-  const typingIndicator = document.getElementById('typing-indicator');
-  if (typingIndicator) {
-    typingIndicator.style.display = 'none'; // Masquer l'indicateur
-  } else {
-    console.error('Typing indicator element not found');
-  }
-}
-
 async function sendMessage() {
   const userInput = document.getElementById('user-input');
   const message = userInput.value.trim();
@@ -195,9 +177,6 @@ async function sendMessage() {
     // Réinitialiser le champ d'entrée
     userInput.value = '';
 
-    // Afficher l'indicateur "IA en train d'écrire"
-    showTypingIndicator();
-
     // Envoyer le message de l'utilisateur à l'API
     const response = await fetch(`http://localhost:5000/api/conversations/${currentConversationId}/messages`, {
       method: 'POST',
@@ -209,7 +188,6 @@ async function sendMessage() {
 
     if (!response.ok) {
       console.error('Erreur lors de l\'envoi du message');
-      hideTypingIndicator();
       return;
     }
 
@@ -222,7 +200,6 @@ async function sendMessage() {
 
     if (!aiResponse.ok) {
       console.error('Erreur lors de la récupération de la réponse de l\'IA');
-      hideTypingIndicator();
       return;
     }
 
@@ -231,16 +208,12 @@ async function sendMessage() {
     // Ajouter la réponse finale de l'IA à l'interface utilisateur
     addMessageToChat('AI', aiMessage.message);
 
-    // Masquer l'indicateur "IA en train d'écrire"
-    hideTypingIndicator();
-
     // Afficher le raisonnement dans la div #reasoning
     const reasoningDiv = document.getElementById('reasoning');
     reasoningDiv.textContent = aiMessage.reasoning;
     reasoningDiv.style.display = 'block'; // Afficher la div
   } catch (error) {
     console.error('Erreur réseau :', error);
-    hideTypingIndicator();
   }
 }
 

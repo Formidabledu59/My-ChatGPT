@@ -96,7 +96,12 @@ body {
   margin-top: 10px;
   border: 1px solid #ccc;
   padding: 10px;
-  width: 300px;
+  width: 80%; /* Augmenter la largeur */
+  max-height: 200px; /* Limiter la hauteur */
+  overflow-y: auto; /* Ajouter une barre de défilement si nécessaire */
+  background-color: #f9f9f9; /* Couleur de fond */
+  border-radius: 5px; /* Coins arrondis */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ombre légère */
 }
 #no-conversation {
   display: none;
@@ -354,41 +359,5 @@ body {
   padding: 10px;
   overflow-y: auto;
   background-color: #ffffff;
-}
-
-/* Animation "IA en train d'écrire" */
-.typing-indicator {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin: 10px;
-}
-
-.typing-indicator span {
-  width: 8px;
-  height: 8px;
-  margin: 0 4px;
-  background-color: #007BFF;
-  border-radius: 50%;
-  animation: typing 1.5s infinite;
-}
-
-.typing-indicator span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.typing-indicator span:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes typing {
-  0%, 80%, 100% {
-    transform: scale(0);
-    opacity: 0.5;
-  }
-  40% {
-    transform: scale(1);
-    opacity: 1;
-  }
 }
 
