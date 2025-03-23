@@ -32,7 +32,7 @@ async function createConversation() {
     await fetchConversations(); // Fetch updated list of conversations
     renderConversations();
     renderMessages();
-    toggleChatContainer(); // Show chat container when a conversation is created
+    toggleWelcomeScreen(); // Mettre à jour l'affichage
   } catch (error) {
     console.error('Error creating conversation:', error);
   }
@@ -70,7 +70,7 @@ async function deleteConversation(conversationId) {
     }
     renderConversations();
     renderMessages();
-    toggleChatContainer(); // Hide chat container if no conversations left
+    toggleWelcomeScreen(); // Mettre à jour l'affichage
   } catch (error) {
     console.error('Error deleting conversation:', error);
   }
@@ -221,6 +221,7 @@ function renderConversations() {
       currentConversationId = conversation.id;
       renderMessages();
       highlightSelectedConversation(conversationItem);
+      toggleWelcomeScreen(); // Mettre à jour l'affichage
     };
     conversationList.appendChild(conversationItem);
   });
@@ -239,11 +240,22 @@ function toggleWelcomeScreen() {
   const chatContainer = document.getElementById('chat-container');
 
   if (!currentConversationId) {
-    welcomeScreen.style.display = 'block';
-    chatContainer.style.display = 'none';
+    welcomeScreen.style.display = 'flex'; // Afficher la page d'accueil
+    chatContainer.style.display = 'none'; // Masquer le conteneur de chat
   } else {
-    welcomeScreen.style.display = 'none';
-    chatContainer.style.display = 'flex';
+    welcomeScreen.style.display = 'none'; // Masquer la page d'accueil
+    chatContainer.style.display = 'flex'; // Afficher le conteneur de chat
+  }
+}
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar.style.width === '50px') {
+    sidebar.style.width = '200px';
+    document.getElementById('conversation-list').style.display = 'block';
+  } else {
+    sidebar.style.width = '50px';
+    document.getElementById('conversation-list').style.display = 'none';
   }
 }
 
