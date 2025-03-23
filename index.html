@@ -18,7 +18,9 @@
     <img src="chat-illustration.png" alt="Illustration de chat IA" class="welcome-image">
   </div>
   <div id="chat-container">
-    <button id="quit-conversation" onclick="quitConversation()">Quitter la conversation</button>
+    <div id="chat-header">
+      <h2>Conversation</h2>
+    </div>
     <div id="chat-box"></div>
     <div id="input-box">
       <input type="text" id="user-input" placeholder="Écrivez votre question...">
@@ -27,6 +29,23 @@
     <div id="loading-indicator" class="loading-indicator">...</div>
     <button id="show-reasoning" onclick="toggleReasoning()">Afficher le raisonnement</button>
     <div id="reasoning"></div>
+    <div id="chat-footer">
+      <button onclick="renameConversation(currentConversationId)">Renommer</button>
+      <button onclick="quitConversation()">Quitter</button>
+      <button onclick="deleteConversation(currentConversationId)">Supprimer</button>
+    </div>
+  </div>
+
+  <div id="modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h3 id="modal-title">Titre du modal</h3>
+      <p id="modal-message">Message du modal</p>
+      <input id="modal-input" type="text" placeholder="Entrez un nouveau nom" style="display: none;">
+      <div class="modal-actions">
+        <button id="modal-confirm" onclick="confirmModal()">Confirmer</button>
+        <button id="modal-cancel" onclick="closeModal()">Annuler</button>
+      </div>
+    </div>
   </div>
 
   <script src="scripts.js"></script>

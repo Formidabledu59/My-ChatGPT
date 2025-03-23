@@ -123,5 +123,18 @@ const getAIResponse = async (req, res) => {
   }
 };
 
-export { addMessage, getConversations, createConversation, getMessages, getAIResponse };
+const updateConversationName = async (req, res) => {
+  const { conversationId } = req.params;
+  const { name } = req.body;
+
+  try {
+    await pool.query('UPDATE conversations SET titre = ? WHERE id = ?', [name, conversationId]);
+    res.status(200).send('Conversation mise à jour avec succès');
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour du nom de la conversation :', error);
+    res.status(500).send('Erreur serveur');
+  }
+};
+
+export { addMessage, getConversations, createConversation, getMessages, getAIResponse, updateConversationName };
 
