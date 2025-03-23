@@ -1,5 +1,6 @@
 let conversations = [];
 let currentConversationId = null;
+let modalCallback = null;
 
 async function fetchConversations() {
   try {
@@ -38,42 +39,103 @@ async function createConversation() {
   }
 }
 
-async function renameConversation(conversationId, newName) {
-  try {
-    await fetch(`http://localhost:5000/api/conversations/${conversationId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ name: newName })
-    });
+function openModal(title, message, showInput = false, callback) {
+  const modal = document.getElementById('modal');
+  const modalTitle = document.getElementById('modal-title');
+  const modalMessage = document.getElementById('modal-message');
+  const modalInput = document.getElementById('modal-input');
 
-    const conversation = conversations.find(c => c.id === conversationId);
-    if (conversation) {
-      conversation.name = newName;
-      renderConversations();
-    }
-  } catch (error) {
-    console.error('Error renaming conversation:', error);
+  modalTitle.textContent = title;
+  modalMessage.textContent = message;
+  modalInput.style.display = showInput ? 'block' : 'none';
+  modalInput.value = ''; // Reset input value
+  modal.style.display = 'flex';
+
+  modalCallback = callback;
+}
+
+function closeModal() {
+  const modal = document.getElementById('modal');
+  modal.style.display = 'none';
+}
+
+function confirmModal() {
+  const modalInput = document.getElementById('modal-input');
+  if (modalCallback) {
+    modalCallback(modalInput.value);
   }
+  closeModal();
+}
+
+async function renameConversation(conversationId) {
+  const conversation = conversations.find((c) => c.id === conversationId);
+  if (!conversation) {
+    console.error('Conversation introuvable');
+    return;
+  }
+
+  openModal(
+    'Renommer la conversation',
+    'Modifiez le nom de la conversation :',
+    true,
+    async (newName) => {
+      if (!newName || newName === conversation.titre) return; // Ne rien faire si le nom est vide ou inchangé
+
+      try {
+        const response = await fetch(`http://localhost:5000/api/conversations/${conversationId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name: newName }),
+        });
+
+        if (!response.ok) {
+          console.error('Erreur lors du renommage de la conversation');
+          return;
+        }
+
+        conversation.titre = newName; // Met à jour le titre localement
+        renderConversations();
+      } catch (error) {
+        console.error('Erreur réseau lors du renommage de la conversation :', error);
+      }
+    }
+  );
+
+  // Pré-remplir le champ de saisie avec le nom actuel
+  const modalInput = document.getElementById('modal-input');
+  modalInput.value = conversation.titre;
 }
 
 async function deleteConversation(conversationId) {
-  try {
-    await fetch(`http://localhost:5000/api/conversations/${conversationId}`, {
-      method: 'DELETE'
-    });
+  openModal(
+    'Supprimer la conversation',
+    'Êtes-vous sûr de vouloir supprimer cette conversation ?',
+    false,
+    async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/conversations/${conversationId}`, {
+          method: 'DELETE',
+        });
 
-    conversations = conversations.filter(c => c.id !== conversationId);
-    if (currentConversationId === conversationId) {
-      currentConversationId = conversations.length ? conversations[0].id : null;
+        if (!response.ok) {
+          console.error('Erreur lors de la suppression de la conversation');
+          return;
+        }
+
+        conversations = conversations.filter((c) => c.id !== conversationId);
+        if (currentConversationId === conversationId) {
+          currentConversationId = conversations.length ? conversations[0].id : null;
+        }
+        renderConversations();
+        renderMessages();
+        toggleWelcomeScreen(); // Mettre à jour l'affichage
+      } catch (error) {
+        console.error('Erreur réseau lors de la suppression de la conversation :', error);
+      }
     }
-    renderConversations();
-    renderMessages();
-    toggleWelcomeScreen(); // Mettre à jour l'affichage
-  } catch (error) {
-    console.error('Error deleting conversation:', error);
-  }
+  );
 }
 
 async function renderMessages() {
