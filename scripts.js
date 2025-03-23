@@ -166,12 +166,20 @@ async function renderMessages() {
 
 function showTypingIndicator() {
   const typingIndicator = document.getElementById('typing-indicator');
-  typingIndicator.style.display = 'flex';
+  if (typingIndicator) {
+    typingIndicator.style.display = 'flex'; // Afficher l'indicateur
+  } else {
+    console.error('Typing indicator element not found');
+  }
 }
 
 function hideTypingIndicator() {
   const typingIndicator = document.getElementById('typing-indicator');
-  typingIndicator.style.display = 'none';
+  if (typingIndicator) {
+    typingIndicator.style.display = 'none'; // Masquer l'indicateur
+  } else {
+    console.error('Typing indicator element not found');
+  }
 }
 
 async function sendMessage() {
@@ -220,11 +228,11 @@ async function sendMessage() {
 
     const aiMessage = await aiResponse.json();
 
+    // Ajouter la réponse finale de l'IA à l'interface utilisateur
+    addMessageToChat('AI', aiMessage.message);
+
     // Masquer l'indicateur "IA en train d'écrire"
     hideTypingIndicator();
-
-    // Ajouter la réponse finale de l'IA à l'interface utilisateur
-    addMessageToChat('ai', aiMessage.message);
 
     // Afficher le raisonnement dans la div #reasoning
     const reasoningDiv = document.getElementById('reasoning');
