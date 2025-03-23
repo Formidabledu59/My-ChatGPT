@@ -9,15 +9,15 @@
 <body>
   <div id="sidebar">
     <button id="toggle-sidebar" onclick="toggleSidebar()">☰</button>
-    <button onclick="createConversation()">Nouvelle Conversation</button>
     <ul id="conversation-list" class="conversation-list"></ul>
   </div>
   <div id="welcome-screen" style="display: none;">
     <h1>Bienvenue sur My-ChatGPT</h1>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <p>Discutez avec une intelligence artificielle avancée. Posez vos questions, obtenez des réponses et explorez des idées.</p>
+    <button onclick="createConversation()" class="create-conversation-btn">Créer une nouvelle conversation</button>
+    <img src="chat-illustration.png" alt="Illustration de chat IA" class="welcome-image">
   </div>
   <div id="chat-container">
-    <div id="no-conversation">Veuillez créer une conversation pour commencer.</div>
     <div id="chat-box"></div>
     <div id="input-box">
       <input type="text" id="user-input" placeholder="Écrivez votre question...">

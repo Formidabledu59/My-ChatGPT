@@ -10,6 +10,7 @@ body {
   padding: 10px;
   overflow-y: auto;
   float: left;
+  transition: width 0.3s ease;
 }
 #sidebar button {
   width: 100%;
@@ -21,9 +22,19 @@ body {
   border-radius: 4px;
   cursor: pointer;
 }
+#sidebar button#toggle-sidebar {
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 10px;
+  cursor: pointer;
+}
 #sidebar ul {
   list-style: none;
   padding: 0;
+  display: block;
+  transition: opacity 0.3s ease;
 }
 #sidebar ul li {
   padding: 10px;
@@ -118,4 +129,51 @@ body {
 .conversation-item.selected {
   background-color: #d0d0d0;
   font-weight: bold;
+}
+
+#welcome-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  background-color: #f9f9f9;
+  padding: 20px;
+}
+
+#welcome-screen h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+#welcome-screen p {
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 30px;
+  max-width: 600px;
+}
+
+.create-conversation-btn {
+  padding: 15px 30px;
+  font-size: 1rem;
+  color: white;
+  background-color: #007BFF;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.create-conversation-btn:hover {
+  background-color: #0056b3;
+}
+
+.welcome-image {
+  margin-top: 30px;
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
