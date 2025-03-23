@@ -61,12 +61,16 @@ body {
   overflow: hidden; /* Empêche les barres de défilement */
 }
 #chat-box {
-  width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
   height: 400px;
   border: 1px solid #ccc;
   padding: 10px;
-  overflow-y: scroll;
-  margin-bottom: 10px;
+  overflow-y: auto;
+  background-color: #ffffff;
 }
 #input-box {
   width: 300px;
@@ -309,5 +313,82 @@ body {
   max-width: 150px; /* Limitez la largeur pour éviter qu'elle soit trop grande */
   height: auto; /* Conservez les proportions */
   margin-bottom: 20px; /* Ajoutez un espacement sous le logo */
+}
+
+/* Style des messages */
+.message {
+  max-width: 70%;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.message.user {
+  background-color: #007BFF;
+  color: white;
+  align-self: flex-end; /* Aligner à droite */
+  text-align: right;
+  border-top-right-radius: 0; /* Coin supérieur droit non arrondi */
+}
+
+.message.ai {
+  background-color: #f1f1f1;
+  color: #333;
+  align-self: flex-start; /* Aligner à gauche */
+  text-align: left;
+  border-top-left-radius: 0; /* Coin supérieur gauche non arrondi */
+}
+
+/* Conteneur des messages */
+#chat-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  height: 400px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  overflow-y: auto;
+  background-color: #ffffff;
+}
+
+/* Animation "IA en train d'écrire" */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 10px;
+}
+
+.typing-indicator span {
+  width: 8px;
+  height: 8px;
+  margin: 0 4px;
+  background-color: #007BFF;
+  border-radius: 50%;
+  animation: typing 1.5s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 

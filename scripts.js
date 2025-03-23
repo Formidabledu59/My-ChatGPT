@@ -152,12 +152,26 @@ async function renderMessages() {
 
     messages.forEach(message => {
       const messageDiv = document.createElement('div');
-      messageDiv.textContent = `${message.sender}: ${message.message}`;
+      messageDiv.className = `message ${message.sender === 'AI' ? 'ai' : 'user'}`;
+      messageDiv.textContent = message.message;
       chatBox.appendChild(messageDiv);
     });
+
+    // Faire défiler vers le bas pour voir le dernier message
+    chatBox.scrollTop = chatBox.scrollHeight;
   } catch (error) {
     console.error('Error fetching messages:', error);
   }
+}
+
+function showTypingIndicator() {
+  const typingIndicator = document.getElementById('typing-indicator');
+  typingIndicator.style.display = 'flex';
+}
+
+function hideTypingIndicator() {
+  const typingIndicator = document.getElementById('typing-indicator');
+  typingIndicator.style.display = 'none';
 }
 
 async function sendMessage() {
@@ -167,6 +181,15 @@ async function sendMessage() {
   if (!message || !currentConversationId) return;
 
   try {
+    // Ajouter le message de l'utilisateur à l'interface utilisateur
+    addMessageToChat('user', message);
+
+    // Réinitialiser le champ d'entrée
+    userInput.value = '';
+
+    // Afficher l'indicateur "IA en train d'écrire"
+    showTypingIndicator();
+
     // Envoyer le message de l'utilisateur à l'API
     const response = await fetch(`http://localhost:5000/api/conversations/${currentConversationId}/messages`, {
       method: 'POST',
@@ -178,16 +201,11 @@ async function sendMessage() {
 
     if (!response.ok) {
       console.error('Erreur lors de l\'envoi du message');
+      hideTypingIndicator();
       return;
     }
 
     const newMessage = await response.json();
-
-    // Ajouter le message de l'utilisateur à l'interface utilisateur
-    addMessageToChat(newMessage.sender, newMessage.message);
-
-    // Réinitialiser le champ d'entrée
-    userInput.value = '';
 
     // Attendre la réponse de l'IA
     const aiResponse = await fetch(`http://localhost:5000/api/conversations/${currentConversationId}/ai-response`, {
@@ -196,13 +214,17 @@ async function sendMessage() {
 
     if (!aiResponse.ok) {
       console.error('Erreur lors de la récupération de la réponse de l\'IA');
+      hideTypingIndicator();
       return;
     }
 
     const aiMessage = await aiResponse.json();
 
+    // Masquer l'indicateur "IA en train d'écrire"
+    hideTypingIndicator();
+
     // Ajouter la réponse finale de l'IA à l'interface utilisateur
-    addMessageToChat(aiMessage.sender, aiMessage.message);
+    addMessageToChat('ai', aiMessage.message);
 
     // Afficher le raisonnement dans la div #reasoning
     const reasoningDiv = document.getElementById('reasoning');
@@ -210,13 +232,14 @@ async function sendMessage() {
     reasoningDiv.style.display = 'block'; // Afficher la div
   } catch (error) {
     console.error('Erreur réseau :', error);
+    hideTypingIndicator();
   }
 }
 
 function addMessageToChat(sender, message) {
   const chatBox = document.getElementById('chat-box');
   const messageElement = document.createElement('div');
-  messageElement.className = `message ${sender}`;
+  messageElement.className = `message ${sender === 'AI' ? 'ai' : 'user'}`;
   messageElement.textContent = message;
   chatBox.appendChild(messageElement);
 
