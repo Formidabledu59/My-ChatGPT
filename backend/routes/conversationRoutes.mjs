@@ -1,5 +1,5 @@
 import express from 'express';
-import { getConversations, createConversation, getMessages, addMessage, getAIResponse, updateConversationName } from '../controllers/conversationController.mjs';
+import { getConversations, createConversation, getMessages, addMessage, getAIResponse, updateConversationName, deleteConversation } from '../controllers/conversationController.mjs';
 
 const router = express.Router();
 
@@ -12,5 +12,6 @@ router.post('/:conversationId/messages', addMessage);
 router.get('/:conversationId/ai-response', getAIResponse);
 
 router.put('/:conversationId', updateConversationName);
+router.delete('/:conversationId', deleteConversation);
 
 export default router;
