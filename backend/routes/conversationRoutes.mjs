@@ -1,9 +1,11 @@
-// backend/routes/conversationRoutes.mjs
 import express from 'express';
-import { addMessage } from '../controllers/conversationController.mjs';
+import { getConversations, createConversation, getMessages, addMessage } from '../controllers/conversationController.mjs';
 
 const router = express.Router();
 
-router.post('/message', addMessage);
+router.get('/', getConversations);
+router.post('/', createConversation);
+router.get('/:conversationId/messages', getMessages);
+router.post('/:conversationId/messages', addMessage);
 
 export default router;

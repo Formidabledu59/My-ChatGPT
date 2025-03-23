@@ -9,6 +9,7 @@ body {
   border-right: 1px solid #ccc;
   padding: 10px;
   overflow-y: auto;
+  float: left;
 }
 #sidebar button {
   width: 100%;
@@ -44,6 +45,7 @@ body {
   align-items: center;
   justify-content: center;
   display: none; /* Hide chat container by default */
+  margin-left: 220px;
 }
 #chat-box {
   width: 300px;
@@ -96,4 +98,24 @@ body {
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
+}
+
+.conversation-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.conversation-item {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #ccc;
+}
+
+.conversation-item:hover {
+  background-color: #f0f0f0;
+}
+
+.conversation-item.selected {
+  background-color: #d0d0d0;
+  font-weight: bold;
 }
