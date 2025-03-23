@@ -297,3 +297,17 @@ body {
   background-color: #CC0000;
 }
 
+/* Logo dans le header */
+.site-logo {
+  height: 40px; /* Ajustez la hauteur pour qu'elle ne soit pas trop grande */
+  margin-right: 10px; /* Ajoutez un espacement entre le logo et le texte */
+  vertical-align: middle;
+}
+
+/* Logo sur la page d'accueil */
+.welcome-logo {
+  max-width: 150px; /* Limitez la largeur pour éviter qu'elle soit trop grande */
+  height: auto; /* Conservez les proportions */
+  margin-bottom: 20px; /* Ajoutez un espacement sous le logo */
+}
+

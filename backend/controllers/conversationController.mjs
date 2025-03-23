@@ -136,5 +136,26 @@ const updateConversationName = async (req, res) => {
   }
 };
 
-export { addMessage, getConversations, createConversation, getMessages, getAIResponse, updateConversationName };
+const deleteConversation = async (req, res) => {
+  const { conversationId } = req.params;
+
+  try {
+    // Supprimer les messages associés à la conversation
+    await pool.query('DELETE FROM message WHERE idConv = ?', [conversationId]);
+
+    // Supprimer la conversation elle-même
+    const [result] = await pool.query('DELETE FROM conversations WHERE id = ?', [conversationId]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Conversation non trouvée' });
+    }
+
+    res.status(200).send('Conversation supprimée avec succès');
+  } catch (error) {
+    console.error('Erreur lors de la suppression de la conversation :', error);
+    res.status(500).send('Erreur serveur');
+  }
+};
+
+export { addMessage, getConversations, createConversation, getMessages, getAIResponse, updateConversationName, deleteConversation };
 
