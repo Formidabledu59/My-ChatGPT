@@ -52,5 +52,76 @@ const getMessages = async (req, res) => {
   }
 };
 
-export { addMessage, getConversations, createConversation, getMessages };
+const getAIResponse = async (req, res) => {
+  const { conversationId } = req.params;
+
+  try {
+    // Récupérer le dernier message de la conversation
+    const [rows] = await pool.query(
+      'SELECT message FROM message WHERE idConv = ? ORDER BY id DESC LIMIT 1',
+      [conversationId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Aucun message trouvé pour cette conversation.' });
+    }
+
+    const lastMessage = rows[0].message;
+
+    // Ajouter une instruction pour des réponses concises
+    const prompt = `Réponds de manière concise et pertinente (en français et en moins de 255 caracteres.) : ${lastMessage}`;
+
+    // Appeler l'API Hugging Face pour obtenir une réponse IA
+    const MODEL_NAME = "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"; // Nom du modèle
+    const response = await fetch(`https://api-inference.huggingface.co/models/${MODEL_NAME}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.HF_API_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ inputs: prompt }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Erreur API Hugging Face:', errorText);
+      return res.status(500).json({ error: 'Erreur lors de la génération de la réponse IA' });
+    }
+
+    const result = await response.json();
+    const aiResponse = result[0]?.generated_text || 'Désolé, je ne peux pas répondre pour le moment.';
+
+    // Séparer le raisonnement et la réponse finale
+    const reasoningEndIndex = aiResponse.indexOf('</think>');
+    let reasoning = '';
+    let finalResponse = aiResponse;
+
+    if (reasoningEndIndex !== -1) {
+      reasoning = aiResponse.substring(0, reasoningEndIndex).trim(); // Extraire le raisonnement
+
+      // Extraire la réponse finale en ignorant ">" et le saut de ligne après "</think>"
+      const responseStartIndex = reasoningEndIndex + 7; // Longueur de "</think>"
+      finalResponse = aiResponse.substring(responseStartIndex).replace(/^\s*>\s*/, '').trim();
+    }
+
+    // Enregistrer uniquement la réponse finale dans la base de données
+    const [insertResult] = await pool.query(
+      'INSERT INTO message (idConv, sender, message) VALUES (?, ?, ?)',
+      [conversationId, 'AI', finalResponse]
+    );
+
+    // Retourner la réponse finale et le raisonnement séparément
+    res.json({
+      id: insertResult.insertId,
+      sender: 'AI',
+      message: finalResponse,
+      reasoning: reasoning, // Inclure le raisonnement pour le frontend
+    });
+  } catch (error) {
+    console.error('Erreur lors de la récupération de la réponse IA:', error);
+    res.status(500).send('Erreur serveur');
+  }
+};
+
+export { addMessage, getConversations, createConversation, getMessages, getAIResponse };
 
