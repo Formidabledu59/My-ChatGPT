@@ -96,61 +96,66 @@ async function renderMessages() {
 }
 
 async function sendMessage() {
-  const userInput = document.getElementById('user-input').value;
-  if (!userInput || !currentConversationId) return;
+  const userInput = document.getElementById('user-input');
+  const message = userInput.value.trim();
 
-  const message = {
-    sender: 'Vous',
-    text: userInput,
-    idConv: currentConversationId // Inclure l'ID de la conversation courante
-  };
+  if (!message || !currentConversationId) return;
 
   try {
     const response = await fetch(`http://localhost:5000/api/conversations/${currentConversationId}/messages`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(message)
+      body: JSON.stringify({ sender: 'user', text: message }),
     });
+
+    if (!response.ok) {
+      console.error('Erreur lors de l\'envoi du message');
+      return;
+    }
 
     const newMessage = await response.json();
-    const conversation = conversations.find(c => c.id === currentConversationId);
-    if (conversation) {
-      conversation.messages.push(newMessage);
-      renderMessages();
-    }
 
-    document.getElementById('user-input').value = '';
+    // Ajouter le message à l'interface utilisateur
+    addMessageToChat(newMessage.sender, newMessage.message);
 
-    // Show loading indicator
-    const loadingIndicator = document.getElementById('loading-indicator');
-    loadingIndicator.style.display = 'block';
-
-    const aiResponse = await fetch('http://localhost:5000/api/conversations/message', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ inputText: userInput })
-    });
-
-    const result = await aiResponse.json();
-    if (conversation) {
-      conversation.messages.push({ sender: 'IA', text: result });
-      renderMessages();
-    }
-
-    // Display reasoning
-    const reasoning = document.getElementById('reasoning');
-    reasoning.textContent = `Raisonnement: ${result.reasoning}`;
+    // Réinitialiser le champ d'entrée
+    userInput.value = '';
   } catch (error) {
-    console.error('Error:', error);
-  } finally {
-    // Hide loading indicator
-    const loadingIndicator = document.getElementById('loading-indicator');
-    loadingIndicator.style.display = 'none';
+    console.error('Erreur réseau :', error);
   }
+}
+
+function addMessageToChat(sender, message) {
+  const chatBox = document.getElementById('chat-box');
+  const messageElement = document.createElement('div');
+  messageElement.className = `message ${sender}`;
+  messageElement.textContent = message;
+  chatBox.appendChild(messageElement);
+
+  // Faire défiler vers le bas pour voir le dernier message
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function loadConversation(conversationId) {
+  fetch(`/api/conversations/${conversationId}`)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        const chatBox = document.getElementById('chat-box');
+        chatBox.innerHTML = ''; // Réinitialiser le chat
+
+        data.messages.forEach((message) => {
+          addMessageToChat(message.sender, message.content);
+        });
+      } else {
+        console.error('Erreur lors du chargement de la conversation :', data.error);
+      }
+    })
+    .catch((error) => {
+      console.error('Erreur réseau :', error);
+    });
 }
 
 function toggleReasoning() {
